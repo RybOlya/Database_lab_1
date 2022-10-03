@@ -1,6 +1,6 @@
 use solar;
 
-select  name from installer_company where area_coverage > 45;
+select  name, area_coverage from installer_company where area_coverage > 45;
 
 select MIN(cost), name from installer_company as install_comp join installation as inst on inst.id=install_comp.id;
 
