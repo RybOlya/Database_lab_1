@@ -10,28 +10,29 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "solar_panel")
-public class SolarPanel {
+@Table(name = "solar_battery")
+public class SolarBattery {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @Column(name = "model", nullable = false, length = 45)
+    private String model;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ip_address_id", nullable = false)
     private IpAddress ipAddress;
 
-    @Column(name = "model", nullable = false, length = 45)
-    private String model;
 
-    @Column(name = "type", nullable = false, length = 35)
-    private String type;
+    @Column(name = "capacity", nullable = false)
+    private Double capacity;
+
+    @Column(name = "operating_temperature", nullable = false)
+    private Integer operatingTemperature;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "solar_system_id", nullable = false)
     private SolarSystem solarSystem;
-
-    @Column(name = "current_angle", nullable = false)
-    private Float currentAngle;
 
 }

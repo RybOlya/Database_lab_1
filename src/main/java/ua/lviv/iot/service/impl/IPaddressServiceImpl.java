@@ -1,47 +1,53 @@
 package ua.lviv.iot.service.impl;
 
-import ua.lviv.iot.dao.ClientDao;
-import ua.lviv.iot.dao.IPaddressDao;
-import ua.lviv.iot.domain.Client;
-import ua.lviv.iot.domain.IPaddress;
-import ua.lviv.iot.service.IPaddressService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ua.lviv.iot.domain.IpAddress;
+import ua.lviv.iot.exception.IpAddressNotFoundException;
+import ua.lviv.iot.exception.SolarExistForIpAddressException;
+import ua.lviv.iot.repository.IpAddressRepository;
+import ua.lviv.iot.repository.ClientRepository;
+import ua.lviv.iot.service.IpAddressService;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
-
-
 @Service
-public class IPaddressServiceImpl implements IPaddressService {
-    private final IPaddressDao IPaddressDao;
+public class IpAddressServiceImpl implements IpAddressService {
+    @Autowired
+    IpAddressRepository ipAddressRepository;
 
-    public IPaddressServiceImpl(IPaddressDao IPaddressDao) {
-        this.IPaddressDao = IPaddressDao;
+    @Autowired
+    ClientRepository clientRepository;
+
+    public IpAddress findById(Integer id) {
+        return ipAddressRepository.findById(id)
+                .orElseThrow(() -> new IpAddressNotFoundException(id));
     }
 
-    @Override
-    public List<IPaddress> findAll() {
-        return IPaddressDao.findAll();
+    public List<IpAddress> findAll() {
+        return ipAddressRepository.findAll();
     }
 
-    @Override
-    public Optional<IPaddress> findById(Integer id) {
-        return IPaddressDao.findById(id);
+    @Transactional
+    public IpAddress create(IpAddress ipAddress) {
+        ipAddressRepository.save(ipAddress);
+        return ipAddress;
     }
 
-    @Override
-    public int create(IPaddress ipaddress) {
-        return IPaddressDao.create(ipaddress);
+    @Transactional
+    public void update(Integer id, IpAddress uIpAddress) {
+        IpAddress ipAddress = ipAddressRepository.findById(id)
+                .orElseThrow(() -> new IpAddressNotFoundException(id));
+        //update
+        ipAddress.setIpAddress(uIpAddress.getIpAddress());
+        ipAddressRepository.save(ipAddress);
     }
 
-    @Override
-    public int update(Integer id, IPaddress ipaddress) {
-        return IPaddressDao.update(id, ipaddress);
+    @Transactional
+    public void delete(Integer id) {
+        IpAddress ipAddress = ipAddressRepository.findById(id)
+                .orElseThrow(() -> new IpAddressNotFoundException(id));
+        if (!ipAddress.getSolarBatteries().isEmpty()&&!ipAddress.getSolarBatteries().isEmpty()) throw new SolarExistForIpAddressException(id);
+        ipAddressRepository.delete(ipAddress);
     }
-
-    @Override
-    public int delete(Integer id) {
-        return IPaddressDao.delete(id);
-    }
-
 }

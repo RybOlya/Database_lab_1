@@ -1,7 +1,6 @@
 package ua.lviv.iot.service;
 
-import ua.lviv.iot.domain.IPaddress;
+import ua.lviv.iot.domain.IpAddress;
 
-public interface IPaddressService extends GeneralService<IPaddress, Integer>{
+public interface IpAddressService extends GeneralService<IpAddress, Integer>{
 }
-

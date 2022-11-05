@@ -1,56 +1,95 @@
-
 package ua.lviv.iot.service.impl;
 
-
-import ua.lviv.iot.dao.SolarPanelDao;
-import ua.lviv.iot.domain.SolarPanel;
-import ua.lviv.iot.service.SolarPanelService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ua.lviv.iot.domain.*;
+import ua.lviv.iot.exception.*;
+import ua.lviv.iot.repository.CityRepository;
+import ua.lviv.iot.repository.IpAddressRepository;
+import ua.lviv.iot.repository.SolarPanelRepository;
+import ua.lviv.iot.repository.SolarSystemRepository;
+import ua.lviv.iot.service.SolarPanelService;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
-
 @Service
 public class SolarPanelServiceImpl implements SolarPanelService {
-    private final SolarPanelDao solarPanelDao;
+    @Autowired
+    IpAddressRepository ipAddressRepository;
+    @Autowired
+    SolarPanelRepository solarPanelRepository;
+    @Autowired
+    SolarSystemRepository solarSystemRepository;
 
-    public SolarPanelServiceImpl(SolarPanelDao solarPanelDao) {
-        this.solarPanelDao = solarPanelDao;
+    public SolarPanel findById(Integer id) {
+        return solarPanelRepository.findById(id)
+                .orElseThrow(() -> new SolarPanelNotFoundException(id));
     }
-
-
-    @Override
     public List<SolarPanel> findAll() {
-        return solarPanelDao.findAll();
+        return solarPanelRepository.findAll();
+    }
+
+    @Transactional
+    public SolarPanel create(SolarPanel solarPanel) {
+        solarPanelRepository.save(solarPanel);
+        return solarPanel;
+    }
+
+    @Transactional
+    public SolarPanel create(SolarPanel solarPanel,  Integer ipAddressId,  Integer solarSystemId) {
+        IpAddress ipAddress = ipAddressRepository.findById(ipAddressId)
+                .orElseThrow(() -> new IpAddressNotFoundException(ipAddressId));
+        solarPanel.setIpAddress(ipAddress);
+        SolarSystem solarSystem = solarSystemRepository.findById(solarSystemId)
+                .orElseThrow(() -> new SolarSystemNotFoundException(solarSystemId));
+        solarPanel.setSolarSystem(solarSystem);
+        solarPanelRepository.save(solarPanel);
+        return solarPanel;
+    }
+
+
+    @Transactional
+    public void update(Integer solarPanelId, SolarPanel uSolarPanel) {
+
+        SolarPanel solarPanel = solarPanelRepository.findById(solarPanelId)
+                .orElseThrow(() -> new SolarPanelNotFoundException(solarPanelId));
+        //update
+        solarPanel.setModel(uSolarPanel.getModel());
+        solarPanel.setIpAddress(uSolarPanel.getIpAddress());
+        solarPanel.setSolarSystem(uSolarPanel.getSolarSystem());
+        solarPanel.setCurrentAngle(uSolarPanel.getCurrentAngle());
+        solarPanelRepository.save(solarPanel);
+
+    }
+
+
+    @Transactional
+    public void update(Integer solarPanelId, SolarPanel uSolarPanel, Integer ipAddressId,  Integer solarSystemId) {
+        IpAddress ipAddress = ipAddressRepository.findById(ipAddressId)
+                .orElseThrow(() -> new IpAddressNotFoundException(ipAddressId));
+        SolarSystem solarSystem = solarSystemRepository.findById(solarSystemId)
+                .orElseThrow(() -> new SolarSystemNotFoundException(solarSystemId));
+        SolarPanel solarPanel = solarPanelRepository.findById(solarPanelId)
+                .orElseThrow(() -> new SolarPanelNotFoundException(solarPanelId));
+        //update
+        solarPanel.setModel(uSolarPanel.getModel());
+        solarPanel.setIpAddress(ipAddress);
+        solarPanel.setSolarSystem(solarSystem);
+        solarPanel.setCurrentAngle(uSolarPanel.getCurrentAngle());
+        solarPanelRepository.save(solarPanel);
+    }
+
+    @Transactional
+    public void delete(Integer id) {
+        SolarPanel solarPanel = solarPanelRepository.findById(id)
+                .orElseThrow(() -> new SolarPanelNotFoundException(id));
+        solarPanelRepository.delete(solarPanel);
     }
 
     @Override
-    public Optional<SolarPanel> findById(Integer id) {
-        return solarPanelDao.findById(id);
-    }
-
-    @Override
-    public int create(SolarPanel solarPanel) {
-        return solarPanelDao.create(solarPanel);
-    }
-
-    @Override
-    public int update(Integer id, SolarPanel solarPanel) {
-        return solarPanelDao.update(id, solarPanel);
-    }
-
-    @Override
-    public int delete(Integer id) {
-        return solarPanelDao.delete(id);
-    }
-
-    @Override
-    public Optional<SolarPanel> findByIPaddress(Integer IPaddressId) {
-        return solarPanelDao.findByIPaddress(IPaddressId);
-    }
-
-    @Override
-    public Optional<SolarPanel> findByCurrentAngle(Integer current_angle) {
-        return solarPanelDao.findByCurrentAngle(current_angle);
+    public List<SolarPanel> findSolarPanelsByIpAddressId(Integer ipAddressId) {
+        IpAddress ipAddress = ipAddressRepository.findById(ipAddressId)
+                .orElseThrow(() -> new IpAddressNotFoundException(ipAddressId));
+        return ipAddress.getSolarPanels();
     }
 }
