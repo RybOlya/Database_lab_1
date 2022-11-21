@@ -37,7 +37,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
             return new ResponseEntity<>(clientDto, HttpStatus.OK);
         }
 
-        
+
         @PostMapping(value = "/{cityId}")
         public ResponseEntity<ClientDto> addClientWithCity(@RequestBody Client client, @PathVariable Integer cityId) {
             Client newClient = clientService.create(client, cityId);

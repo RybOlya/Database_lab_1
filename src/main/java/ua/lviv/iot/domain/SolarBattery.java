@@ -20,7 +20,7 @@ public class SolarBattery {
     @Column(name = "model", nullable = false, length = 45)
     private String model;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ip_address_id", nullable = false)
     private IpAddress ipAddress;
 

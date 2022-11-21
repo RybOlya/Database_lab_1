@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.lviv.iot.domain.Client;
 import ua.lviv.iot.domain.SolarPanel;
+import ua.lviv.iot.domain.SolarSystem;
 import ua.lviv.iot.dto.ClientDto;
 import ua.lviv.iot.dto.SolarPanelDto;
+import ua.lviv.iot.dto.SolarSystemDto;
 import ua.lviv.iot.dto.assembler.SolarPanelDtoAssembler;
 import ua.lviv.iot.service.SolarPanelService;
 
@@ -40,14 +42,7 @@ public class SolarPanelController {
         return new ResponseEntity<>(solarPanelDtos, HttpStatus.OK);
     }
 
-    @GetMapping(value = "ipAddresses/{ipAddressId}")
-    public ResponseEntity<CollectionModel<SolarPanelDto>> getSolarPanelsByIpAddressesId(@PathVariable Integer ipAddessId) {
-        List<SolarPanel> solarPanels = solarPanelService.findSolarPanelsByIpAddressId(ipAddessId);
-        Link selfLink =
-                linkTo(methodOn(SolarPanelController.class).getSolarPanelsByIpAddressesId(ipAddessId)).withSelfRel();
-        CollectionModel<SolarPanelDto> solarPanelDtos = solarPanelDtoAssembler.toCollectionModel(solarPanels, selfLink);
-        return new ResponseEntity<>(solarPanelDtos, HttpStatus.OK);
-    }
+
     @PostMapping(value = "/{ipAddressId}/{solarSystemId}")
     public ResponseEntity<SolarPanelDto> addSolarPanelWithIpAddressAndSolarSystem(@RequestBody SolarPanel solarPanel,
                                                               @PathVariable Integer ipAddressId,
@@ -56,17 +51,13 @@ public class SolarPanelController {
         SolarPanelDto solarPanelDto = solarPanelDtoAssembler.toModel(newSolarPanel);
         return new ResponseEntity<>(solarPanelDto, HttpStatus.CREATED);
     }
-    @PostMapping(value = "")
-    public ResponseEntity<SolarPanelDto> addSolarPanel(@RequestBody SolarPanel solarPanel) {
-        SolarPanel newSolarPanel = solarPanelService.create(solarPanel);
-        SolarPanelDto solarPanelDto = solarPanelDtoAssembler.toModel(newSolarPanel);
-        return new ResponseEntity<>(solarPanelDto, HttpStatus.CREATED);
-    }
 
-    @PutMapping(value = "/{solarPanelId}")
-    public ResponseEntity<?> updateSolarPanel(@RequestBody SolarPanel uSolarPanel,
-                                               @PathVariable Integer solarPanelId) {
-        solarPanelService.update(solarPanelId, uSolarPanel);
+
+    @PutMapping(value = "/{solarPanelId}/{ipAddressId}/{solarSystemId}")
+    public ResponseEntity<?> updateSolarPanelWithIpAddressAndSolarSystem(@RequestBody SolarPanel uSolarPanel,
+                                               @PathVariable Integer solarPanelId, @PathVariable Integer ipAddressId,
+                                                                         @PathVariable Integer solarSystemId) {
+        solarPanelService.update( solarPanelId,uSolarPanel,ipAddressId,solarSystemId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

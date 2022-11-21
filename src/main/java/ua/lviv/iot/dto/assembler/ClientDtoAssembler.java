@@ -6,7 +6,6 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 import ua.lviv.iot.controller.ClientController;
 import ua.lviv.iot.domain.Client;
-import ua.lviv.iot.dto.CityDto;
 import ua.lviv.iot.dto.ClientDto;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

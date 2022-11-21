@@ -30,8 +30,13 @@ public class IpAddressServiceImpl implements IpAddressService {
 
     @Transactional
     public IpAddress create(IpAddress ipAddress) {
-        ipAddressRepository.save(ipAddress);
-        return ipAddress;
+
+        return new IpAddress() {
+            {
+                setId(ipAddress.getId());
+                setIpAddress(ipAddressRepository.insertIntoIpAddress(ipAddress.getId(), ipAddress.getIpAddress()));
+            }
+        };
     }
 
     @Transactional
@@ -49,5 +54,9 @@ public class IpAddressServiceImpl implements IpAddressService {
                 .orElseThrow(() -> new IpAddressNotFoundException(id));
         if (!ipAddress.getSolarBatteries().isEmpty()&&!ipAddress.getSolarBatteries().isEmpty()) throw new SolarExistForIpAddressException(id);
         ipAddressRepository.delete(ipAddress);
+    }
+    @Override
+    public void insertTenRowsInIpAddress() {
+        ipAddressRepository.insertTenRowsInIpAddress();
     }
 }

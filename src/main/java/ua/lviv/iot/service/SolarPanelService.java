@@ -8,8 +8,9 @@ import java.util.List;
 
 
 public interface SolarPanelService extends GeneralService<SolarPanel, Integer>{
+
     SolarPanel create(SolarPanel entity, Integer ipAddressId,Integer solarSystemId);
 
     void update(Integer solarPanelId, SolarPanel uSolarPanel,Integer ipAddressId,Integer solarSystemId);
-    public List<SolarPanel> findSolarPanelsByIpAddressId(Integer ipAddressId);
+    List<SolarPanel> findSolarPanelsByIpAddressId(Integer ipAddressId);
 }

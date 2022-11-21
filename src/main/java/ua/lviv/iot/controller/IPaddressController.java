@@ -52,4 +52,9 @@ public class IpAddressController {
         ipAddressService.delete(ipAddressId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @PostMapping("/insertTenRowsInIpAddress")
+    public void insertTenRowsInIpAddress(){
+        ipAddressService.insertTenRowsInIpAddress();
+    }
+
 }

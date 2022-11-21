@@ -52,4 +52,5 @@ public class CityController {
         cityService.delete(cityId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-}
+
+  }

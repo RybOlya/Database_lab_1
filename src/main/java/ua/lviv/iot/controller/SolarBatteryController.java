@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.lviv.iot.domain.Client;
 import ua.lviv.iot.domain.SolarBattery;
+import ua.lviv.iot.domain.SolarPanel;
 import ua.lviv.iot.dto.ClientDto;
 import ua.lviv.iot.dto.SolarBatteryDto;
 import ua.lviv.iot.dto.SolarPanelDto;
@@ -36,32 +37,29 @@ public class SolarBatteryController {
 
     @GetMapping(value = "")
     public ResponseEntity<CollectionModel<SolarBatteryDto>> getAllSolarBatteries() {
-        List<SolarBattery> solarBatterys = solarBatteryService.findAll();
-        CollectionModel<SolarBatteryDto> solarBatteryDtos = solarBatteryDtoAssembler.toCollectionModel(solarBatterys);
+        List<SolarBattery> solarBatteries = solarBatteryService.findAll();
+        CollectionModel<SolarBatteryDto> solarBatteryDtos = solarBatteryDtoAssembler.toCollectionModel(solarBatteries);
         return new ResponseEntity<>(solarBatteryDtos, HttpStatus.OK);
     }
 
-    @GetMapping(value = "ipAddresses/{ipAddressId}")
-    public ResponseEntity<CollectionModel<SolarBatteryDto>> getSolarBatteriesByIpAddressesId(@PathVariable Integer ipAddessId) {
-        List<SolarBattery> solarBatteries = solarBatteryService.findSolarBatteriesByIpAddressId(ipAddessId);
-        Link selfLink =
-                linkTo(methodOn(SolarBatteryController.class).getSolarBatteriesByIpAddressesId(ipAddessId)).withSelfRel();
-        CollectionModel<SolarBatteryDto> solarBatteryDtos = solarBatteryDtoAssembler.toCollectionModel(solarBatteries,
-                selfLink);
-        return new ResponseEntity<>(solarBatteryDtos, HttpStatus.OK);
-    }
 
-    @PostMapping(value = "")
-    public ResponseEntity<SolarBatteryDto> addSolarBattery(@RequestBody SolarBattery solarBattery) {
-        SolarBattery newSolarBattery = solarBatteryService.create(solarBattery);
+
+    @PostMapping(value = "/{ipAddressId}/{solarSystemId}")
+    public ResponseEntity<SolarBatteryDto> addSolarBatteryWithIpAddressAndSolarSystem(@RequestBody SolarBattery solarBattery,
+                                                                                  @PathVariable Integer ipAddressId,
+                                                                                  @PathVariable Integer solarSystemId) {
+        SolarBattery newSolarBattery = solarBatteryService.create(solarBattery, ipAddressId,solarSystemId);
         SolarBatteryDto solarBatteryDto = solarBatteryDtoAssembler.toModel(newSolarBattery);
         return new ResponseEntity<>(solarBatteryDto, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/{solarBatteryId}")
-    public ResponseEntity<?> updateSolarBattery(@RequestBody SolarBattery uSolarBattery,
-                                              @PathVariable Integer solarBatteryId) {
-        solarBatteryService.update(solarBatteryId, uSolarBattery);
+
+    @PutMapping(value = "/{solarBatteryId}/{ipAddressId}/{solarSystemId}")
+    public ResponseEntity<?> updateSolarBatteryWithIpAddressAndSolarSystem(@RequestBody SolarBattery uSolarBattery,
+                                                                         @PathVariable Integer solarBatteryId,
+                                                                     @PathVariable Integer ipAddressId,
+                                                                         @PathVariable Integer solarSystemId) {
+        solarBatteryService.update( solarBatteryId,uSolarBattery,ipAddressId,solarSystemId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

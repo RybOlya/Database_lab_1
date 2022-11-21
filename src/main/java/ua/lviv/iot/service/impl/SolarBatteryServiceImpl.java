@@ -4,13 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.lviv.iot.domain.*;
 import ua.lviv.iot.domain.SolarBattery;
-import ua.lviv.iot.exception.CityNotFoundException;
-import ua.lviv.iot.exception.ClientNotFoundException;
-import ua.lviv.iot.exception.IpAddressNotFoundException;
-import ua.lviv.iot.exception.SolarBatteryNotFoundException;
+import ua.lviv.iot.exception.*;
 import ua.lviv.iot.repository.ClientRepository;
 import ua.lviv.iot.repository.IpAddressRepository;
 import ua.lviv.iot.repository.SolarBatteryRepository;
+import ua.lviv.iot.repository.SolarSystemRepository;
 import ua.lviv.iot.service.SolarBatteryService;
 
 import javax.transaction.Transactional;
@@ -20,6 +18,8 @@ public class SolarBatteryServiceImpl implements SolarBatteryService {
     @Autowired
     SolarBatteryRepository solarBatteryRepository;
 
+    @Autowired
+    SolarSystemRepository solarSystemRepository;
     @Autowired
     ClientRepository clientRepository;
 
@@ -33,7 +33,17 @@ public class SolarBatteryServiceImpl implements SolarBatteryService {
     public List<SolarBattery> findAll() {
         return solarBatteryRepository.findAll();
     }
-
+    @Transactional
+    public SolarBattery create(SolarBattery solarBattery,  Integer ipAddressId,  Integer solarSystemId) {
+        IpAddress ipAddress = ipAddressRepository.findById(ipAddressId)
+                .orElseThrow(() -> new IpAddressNotFoundException(ipAddressId));
+        solarBattery.setIpAddress(ipAddress);
+        SolarSystem solarSystem = solarSystemRepository.findById(solarSystemId)
+                .orElseThrow(() -> new SolarSystemNotFoundException(solarSystemId));
+        solarBattery.setSolarSystem(solarSystem);
+        solarBatteryRepository.save(solarBattery);
+        return solarBattery;
+    }
     @Transactional
     public SolarBattery create(SolarBattery solarBattery) {
         solarBatteryRepository.save(solarBattery);
@@ -52,7 +62,23 @@ public class SolarBatteryServiceImpl implements SolarBatteryService {
         solarBatteryRepository.save(solarBattery);
 
     }
-
+    @Transactional
+    public void update(Integer solarBatteryId, SolarBattery uSolarBattery, Integer ipAddressId,
+                       Integer solarSystemId) {
+        IpAddress ipAddress = ipAddressRepository.findById(ipAddressId)
+                .orElseThrow(() -> new IpAddressNotFoundException(ipAddressId));
+        SolarSystem solarSystem = solarSystemRepository.findById(solarSystemId)
+                .orElseThrow(() -> new SolarSystemNotFoundException(solarSystemId));
+        SolarBattery solarBattery = solarBatteryRepository.findById(solarBatteryId)
+                .orElseThrow(() -> new SolarBatteryNotFoundException(solarBatteryId));
+        //update
+        solarBattery.setModel(uSolarBattery.getModel());
+        solarBattery.setIpAddress(ipAddress);
+        solarBattery.setSolarSystem(solarSystem);
+        solarBattery.setCapacity(uSolarBattery.getCapacity());
+        solarBattery.setOperatingTemperature(uSolarBattery.getOperatingTemperature());
+        solarBatteryRepository.save(solarBattery);
+    }
     @Override
     public List<SolarBattery> findSolarBatteriesByIpAddressId(Integer ipAddressId) {
         IpAddress ipAddress = ipAddressRepository.findById(ipAddressId)

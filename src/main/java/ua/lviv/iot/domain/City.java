@@ -24,7 +24,9 @@ public class City {
     public List<Client> getClients() {
         return clients;
     }
-
+    @ManyToOne
+    @JoinColumn(name = "country_id", referencedColumnName = "id")
+    private Country country;
     public void setClients(List<Client> clients) {
         this.clients = clients;
     }

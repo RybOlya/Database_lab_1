@@ -88,8 +88,6 @@ public class SolarPanelServiceImpl implements SolarPanelService {
 
     @Override
     public List<SolarPanel> findSolarPanelsByIpAddressId(Integer ipAddressId) {
-        IpAddress ipAddress = ipAddressRepository.findById(ipAddressId)
-                .orElseThrow(() -> new IpAddressNotFoundException(ipAddressId));
-        return ipAddress.getSolarPanels();
+        return solarPanelRepository.findByIpAddressId(ipAddressId);
     }
 }

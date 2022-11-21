@@ -43,6 +43,16 @@ public class SolarSystemServiceImpl implements SolarSystemService {
     }
 
     @Transactional
+    public SolarSystem create(SolarSystem solarSystem, Integer cityId) {
+
+        City city = cityRepository.findById(cityId)
+                .orElseThrow(() -> new CityNotFoundException(cityId));
+        solarSystem.setCity(city);
+        solarSystemRepository.save(solarSystem);
+        return solarSystem;
+    }
+
+    @Transactional
     public void update(Integer solarSystemId, SolarSystem uSolarSystem) {
 
         SolarSystem solarSystem = solarSystemRepository.findById(solarSystemId)

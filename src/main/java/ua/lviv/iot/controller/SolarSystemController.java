@@ -6,10 +6,13 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ua.lviv.iot.domain.Client;
 import ua.lviv.iot.domain.SolarSystem;
+import ua.lviv.iot.dto.ClientDto;
 import ua.lviv.iot.dto.SolarSystemDto;
 import ua.lviv.iot.dto.assembler.SolarSystemDtoAssembler;
 import ua.lviv.iot.service.SolarSystemService;
+import ua.lviv.iot.service.impl.StoredProceduresService;
 
 import java.util.List;
 
@@ -20,7 +23,8 @@ public class SolarSystemController {
     private SolarSystemService solarSystemService;
     @Autowired
     private SolarSystemDtoAssembler solarSystemDtoAssembler;
-
+    @Autowired
+    private StoredProceduresService storedProceduresService;
     @GetMapping(value = "/{solarSystemId}")
     public ResponseEntity<SolarSystemDto> getSolarSystem(@PathVariable Integer solarSystemId) {
         SolarSystem solarSystem = solarSystemService.findById(solarSystemId);
@@ -42,17 +46,19 @@ public class SolarSystemController {
         return new ResponseEntity<>(solarSystemDtos, HttpStatus.OK);
     }
 
-    @PostMapping(value = "")
-    public ResponseEntity<SolarSystemDto> addSolarSystem(@RequestBody SolarSystem solarSystem) {
-        SolarSystem newSolarSystem = solarSystemService.create(solarSystem);
+    @PostMapping(value = "/{cityId}")
+    public ResponseEntity<SolarSystemDto> addSolarSystemWithCity(@RequestBody SolarSystem solarSystem,
+                                                         @PathVariable Integer cityId) {
+        SolarSystem newSolarSystem = solarSystemService.create(solarSystem, cityId);
         SolarSystemDto solarSystemDto = solarSystemDtoAssembler.toModel(newSolarSystem);
         return new ResponseEntity<>(solarSystemDto, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/{solarSystemId}")
+    @PutMapping(value = "/{solarSystemId}/{cityId}")
     public ResponseEntity<?> updateSolarSystem(@RequestBody SolarSystem uSolarSystem,
-                                              @PathVariable Integer solarSystemId) {
-        solarSystemService.update(solarSystemId, uSolarSystem);
+                                              @PathVariable Integer solarSystemId,@PathVariable Integer cityId) {
+
+        solarSystemService.update(solarSystemId, uSolarSystem,cityId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -60,5 +66,12 @@ public class SolarSystemController {
     public ResponseEntity<?> deleteSolarSystem(@PathVariable Integer solarSystemId) {
         solarSystemService.delete(solarSystemId);
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
+
+    @GetMapping(value = "/max/energy-sold")
+    public ResponseEntity<String> countMaxEnergySold() {
+        return new ResponseEntity<>(storedProceduresService.getMaxEnergySold(), HttpStatus.OK);
+    }
+
 }

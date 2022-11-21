@@ -12,5 +12,5 @@ import java.util.List;
 
 @Repository
 public interface SolarPanelRepository extends JpaRepository<SolarPanel, Integer> {
-    SolarPanel findByModel(String model);
+    List<SolarPanel> findByIpAddressId(Integer IpAddressId);
 }

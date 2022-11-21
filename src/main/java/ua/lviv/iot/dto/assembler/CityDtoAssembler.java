@@ -17,6 +17,7 @@ public class CityDtoAssembler implements RepresentationModelAssembler<City, City
         CityDto cityDto =CityDto.builder()
                 .id(entity.getId())
                 .city(entity.getCity())
+                .country(entity.getCountry().getName())
                 .build();
         Link selfLink = linkTo(methodOn(CityController.class).getCity(cityDto.getId())).withSelfRel();
 
