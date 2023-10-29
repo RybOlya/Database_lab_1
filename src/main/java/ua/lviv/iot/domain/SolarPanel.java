@@ -1,17 +1,38 @@
 package ua.lviv.iot.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@AllArgsConstructor
+import javax.persistence.*;
+import java.util.List;
+
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@Entity
+@Table(name = "solar_panel")
 public class SolarPanel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Integer id;
-    private String model;
-    private String type;
-    private Integer currentAngle;
-    private Integer ip_address_id;
-}
 
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "ip_address_id", nullable = false)
+    private IpAddress ipAddress;
+
+    @Column(name = "model", nullable = false, length = 45)
+    private String model;
+
+    @Column(name = "type", nullable = false, length = 35)
+    private String type;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "solar_system_id", nullable = false)
+    private SolarSystem solarSystem;
+
+    @Column(name = "current_angle", nullable = false)
+    private Float currentAngle;
+
+}

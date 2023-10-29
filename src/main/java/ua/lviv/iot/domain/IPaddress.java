@@ -1,13 +1,39 @@
 package ua.lviv.iot.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@AllArgsConstructor
+import javax.persistence.*;
+import java.util.List;
+
 @NoArgsConstructor
-@Data
-public class IPaddress {
+@Getter
+@Setter
+@Entity
+@Table(name = "ip_address")
+public class IpAddress {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Integer id;
-    private String ip_address;
+
+    @Column(name = "ip_address", nullable = false, length = 15)
+    private String ipAddress;
+    @OneToMany(mappedBy="ipAddress")
+    private List<SolarPanel> solarPanels;
+    public List<SolarPanel> getSolarPanels() {
+        return solarPanels;
+    }
+    public void setSolarPanels(List<SolarPanel> solarPanels) {
+        this.solarPanels = solarPanels;
+    }
+    @OneToMany(mappedBy="ipAddress")
+    private List<SolarBattery> solarBatteries;
+    public List<SolarBattery> getSolarBatteries() {
+        return solarBatteries;
+    }
+    public void setSolarBatteries(List<SolarBattery> solarBatteries) {
+        this.solarBatteries = solarBatteries;
+    }
 }
